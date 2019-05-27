@@ -33,13 +33,10 @@ defmodule TestIex do
 
   ## Examples
 
-    # Single test
     iex> TestIex.test("./path/test/file/test_file_test.exs", line_number)
 
-    # Single file
     iex> TestIex.test("./path/test/file/test_file_test.exs")
 
-    # Multiple files
     iex> TestIex.test(["./path/test/file/test_file_test.exs", "./path/test/file/test_file_2_test.exs"])
 
   """

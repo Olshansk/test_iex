@@ -42,7 +42,8 @@ defmodule TestIex.MixProject do
       ],
       licenses: ["MIT"],
       links: %{
-        "GitHub" => "https://github.com/Olshansk/test_iex"
+        "GitHub" => "https://github.com/Olshansk/test_iex",
+        "Docs" => "https://hexdocs.pm/test_iex/0.1.0"
       }
     ]
   end
