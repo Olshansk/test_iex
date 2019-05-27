@@ -31,14 +31,14 @@ defmodule TestIex do
   @doc"""
   Runs a single test, a test file, or multiple test files
 
-  ## Examples
+  ## Example: Run a single test
+      iex> TestIex.test("./path/test/file/test_file_test.exs", line_number)
 
-    iex> TestIex.test("./path/test/file/test_file_test.exs", line_number)
+  ## Example: Run a single test file
+      iex> TestIex.test("./path/test/file/test_file_test.exs")
 
-    iex> TestIex.test("./path/test/file/test_file_test.exs")
-
-    iex> TestIex.test(["./path/test/file/test_file_test.exs", "./path/test/file/test_file_2_test.exs"])
-
+  ## Example: Run several test files:
+      iex> TestIex.test(["./path/test/file/test_file_test.exs", "./path/test/file/test_file_2_test.exs"])
   """
   def test(path, line \\ nil)
   def test(path, line) when is_binary(path) do
