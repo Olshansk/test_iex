@@ -6,6 +6,8 @@ defmodule TestIex.MixProject do
       app: :test_iex,
       version: "0.1.0",
       elixir: "~> 1.8",
+      description: description(),
+      package: package(),
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
