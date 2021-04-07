@@ -15,7 +15,9 @@ defmodule TestIex do
   def start_testing() do
     ExUnit.start()
 
-    Code.eval_file("test/test_helper.exs", File.cwd!())
+    if File.exists?("test/test_helper.exs") do
+      Code.eval_file("test/test_helper.exs", File.cwd!())
+    end
 
     :ok
   end
