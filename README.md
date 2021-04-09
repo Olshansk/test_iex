@@ -77,3 +77,12 @@ iex> r MyModulesNameSpace.MyModule
 ```elixir
 iex> recompile
 ```
+## Publishing New Package Versions
+For library maintainers, the following is an example of how to publish new versions of the package. Run the following commands assuming you incremented the version in the `mix.exs` file from 0.3.4 to 0.3.5:
+
+```
+git commit -am "Increase version from 0.3.4 to 0.3.5"
+git tag -a v0.3.5 -m "Git tag 0.3.5"
+git push origin --tags
+mix hex.publish
+```
