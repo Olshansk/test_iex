@@ -54,34 +54,45 @@ defmodule TestIex do
     end
 
     Code.load_file(path)
-
-    if v6_or_higher?() do
-      ExUnit.Server.modules_loaded()
-    else
-      ExUnit.Server.cases_loaded()
-    end
-
+    load_modules()
     ExUnit.run()
   end
 
   def test(paths, _line) when is_list(paths) do
     ExUnit.configure(exclude: [], include: [])
-
     Enum.map(paths, &Code.load_file/1)
-
-    if v6_or_higher?() do
-      ExUnit.Server.modules_loaded()
-    else
-      ExUnit.Server.cases_loaded()
-    end
-
+    load_modules()
     ExUnit.run()
   end
 
-  defp v6_or_higher?() do
-    System.version()
-    |> String.split(".")
-    |> Enum.at(1)
-    |> String.to_integer() >= 6
+  defp load_modules() do
+    cond do
+      # 1.14.2 [1]introduces the changes from the commit [2]
+      # [1]: https://github.com/elixir-lang/elixir/commit/0909940b04a3e22c9ea4fedafa2aac349717011c
+      # [2]: https://github.com/elixir-lang/elixir/commit/83b2a3d91f8888dd1493f64677467fae65450a0d#
+      version_eq_than?(1, 14, 2) ->
+        ExUnit.Server.modules_loaded(false)
+
+      version_eq_than?(1, 6, 0) ->
+        ExUnit.Server.modules_loaded()
+
+      true ->
+        ExUnit.Server.cases_loaded()
+    end
+  end
+
+  defp version_eq_than?(1, minor, patch) do
+    "1." <> minor_dot_patch_maybe_dash_reminder = System.version()
+    # examples of the major_dot_patch_maybe_dash_reminder:
+    # - 14.3
+    # - 15.0-dev
+    [_full_match, minor_actual, patch_actual | _] =
+      Regex.run(~r/(\d+)\.(\d+).*/, minor_dot_patch_maybe_dash_reminder)
+
+    cond do
+      minor_actual > minor -> true
+      minor_actual == minor and patch_actual >= patch -> true
+      true -> false
+    end
   end
 end
