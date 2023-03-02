@@ -19,7 +19,6 @@ defmodule TestIex do
       Code.eval_file("test/test_helper.exs", File.cwd!())
     end
 
-    :ok
   end
 
   @doc """
@@ -53,13 +52,9 @@ defmodule TestIex do
       ExUnit.configure(exclude: [], include: [])
     end
 
-    Code.load_file(path)
+    load_file_respecting_deprecations(path)
 
-    if v6_or_higher?() do
-      ExUnit.Server.modules_loaded()
-    else
-      ExUnit.Server.cases_loaded()
-    end
+    modules_or_cases_loaded()
 
     ExUnit.run()
   end
@@ -67,21 +62,56 @@ defmodule TestIex do
   def test(paths, _line) when is_list(paths) do
     ExUnit.configure(exclude: [], include: [])
 
-    Enum.map(paths, &Code.load_file/1)
+    Enum.map(paths, &load_file_respecting_deprecations/1)
 
-    if v6_or_higher?() do
-      ExUnit.Server.modules_loaded()
-    else
-      ExUnit.Server.cases_loaded()
-    end
+    modules_or_cases_loaded()
 
     ExUnit.run()
   end
 
-  defp v6_or_higher?() do
-    System.version()
-    |> String.split(".")
-    |> Enum.at(1)
-    |> String.to_integer() >= 6
+  defp system_version(),
+    do: System.version() |> String.split(".") |> Enum.map(&String.to_integer/1) |> List.to_tuple()
+
+  defp system_version_minor(), do: elem(system_version(), 1)
+  defp system_version_patch(), do: elem(system_version(), 2)
+
+  defp v6_or_higher?(), do: system_version_minor() >= 6
+  defp v9_or_higher?(), do: system_version_minor() >= 9
+  defp v1_14_2_or_higher?(), do: system_version_minor() >= 14 and system_version_patch() >= 2
+
+  defp modules_or_cases_loaded() do
+    if(v6_or_higher?()) do
+      if(v1_14_2_or_higher?()) do
+        apply(
+          ExUnit.Server,
+          :modules_loaded,
+          [false]
+        )
+      else
+        apply(
+          ExUnit.Server,
+          :modules_loaded,
+          []
+        )
+      end
+    else
+      apply(ExUnit.Server, :cases_loaded, [])
+    end
+  end
+
+  defp load_file_respecting_deprecations(path) do
+    if v9_or_higher?() do
+      apply(
+        Code,
+        :require_file,
+        [path]
+      )
+    else
+      apply(
+        Code,
+        :load_file,
+        [path]
+      )
+    end
   end
 end
