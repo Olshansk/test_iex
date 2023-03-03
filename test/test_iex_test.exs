@@ -1,7 +1,7 @@
 defmodule TestIexTest do
   use ExUnit.Case
 
-  @doc"""
+  @doc """
     Execute this test in any of the follow ways:
 
       iex> TestIex.test("test/test_iex_test.exs")
